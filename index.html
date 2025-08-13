@@ -1,0 +1,1312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReelMaster Pro - Facebook Reels Automation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --fb-blue: #1877f2;
+            --fb-blue-dark: #0d5cb6;
+            --fb-green: #42b72a;
+            --light: #f0f2f5;
+            --dark: #1c1e21;
+            --gray: #606770;
+            --border: #dddfe2;
+            --card-bg: #ffffff;
+            --success: #42b72a;
+            --warning: #f7b928;
+            --danger: #e41e3f;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .dashboard {
+            width: 100%;
+            max-width: 1400px;
+            background: rgba(255, 255, 255, 0.97);
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 95vh;
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(to right, var(--fb-blue), var(--fb-blue-dark));
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            min-width: 300px;
+        }
+        
+        .logo {
+            font-size: 2.5rem;
+        }
+        
+        .app-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        
+        .app-subtitle {
+            font-size: 1rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+        
+        .api-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .api-input-container {
+            position: relative;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 30px;
+            padding: 10px 20px;
+            min-width: 280px;
+            flex: 1;
+        }
+        
+        .api-input {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 0.95rem;
+            width: 100%;
+            padding-right: 30px;
+        }
+        
+        .api-input::placeholder {
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .toggle-visibility {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            cursor: pointer;
+        }
+        
+        .connect-btn {
+            background: white;
+            color: var(--fb-blue);
+            border: none;
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+        
+        .connect-btn:hover {
+            background: var(--light);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Main Content */
+        .main-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 25px;
+            padding: 25px;
+            flex: 1;
+            overflow: auto;
+            height: 100%;
+        }
+        
+        .panel {
+            background: var(--light);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            min-height: 300px;
+        }
+        
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--border);
+        }
+        
+        .section-title {
+            color: var(--fb-blue);
+            font-size: 1.4rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .panel-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Upload Section - Fixed Size */
+        .upload-section {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .upload-area {
+            border: 2px dashed var(--fb-blue);
+            border-radius: 12px;
+            padding: 30px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(24, 119, 242, 0.05);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 250px;
+            position: relative;
+        }
+        
+        .upload-area:hover {
+            background: rgba(24, 119, 242, 0.1);
+        }
+        
+        .upload-icon {
+            font-size: 3.5rem;
+            color: var(--fb-blue);
+            margin-bottom: 15px;
+        }
+        
+        .upload-text {
+            font-size: 1.2rem;
+            color: var(--gray);
+            margin-bottom: 15px;
+        }
+        
+        .file-list {
+            margin-top: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+        
+        .file-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: white;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            box-shadow: var(--shadow);
+        }
+        
+        .file-icon {
+            color: var(--fb-blue);
+            font-size: 1.2rem;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        
+        .file-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .file-name {
+            font-weight: 500;
+            margin-bottom: 3px;
+            font-size: 0.95rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .file-size {
+            color: var(--gray);
+            font-size: 0.8rem;
+        }
+        
+        .file-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .file-action-btn {
+            background: var(--light);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .file-action-btn:hover {
+            background: #e4e6eb;
+        }
+        
+        /* Caption Section */
+        .caption-section {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .caption-input {
+            width: 100%;
+            height: 150px;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            font-size: 1rem;
+            resize: none;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+            flex-shrink: 0;
+        }
+        
+        .caption-input:focus {
+            outline: none;
+            border-color: var(--fb-blue);
+            box-shadow: 0 0 0 3px rgba(24, 119, 242, 0.2);
+        }
+        
+        .caption-tools {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+        
+        .tool-btn {
+            background: white;
+            border: 1px solid var(--border);
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
+            flex: 1;
+            min-width: 150px;
+        }
+        
+        .tool-btn:hover {
+            background: #e4e6eb;
+            border-color: var(--fb-blue);
+            color: var(--fb-blue);
+        }
+        
+        .hashtag-suggestions {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: var(--shadow);
+            margin-top: auto;
+            flex-shrink: 0;
+        }
+        
+        .hashtag-title {
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--fb-blue);
+            font-size: 0.95rem;
+        }
+        
+        .hashtag-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .hashtag {
+            background: rgba(24, 119, 242, 0.1);
+            color: var(--fb-blue);
+            padding: 6px 12px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+        
+        .hashtag:hover {
+            background: rgba(24, 119, 242, 0.2);
+        }
+        
+        /* Scheduling Section */
+        .scheduling-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            grid-column: 1 / -1;
+            box-shadow: var(--shadow);
+        }
+        
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .schedule-option {
+            background: var(--light);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2px solid transparent;
+            min-height: 180px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .schedule-option.active {
+            border-color: var(--fb-blue);
+            background: rgba(24, 119, 242, 0.05);
+        }
+        
+        .option-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+        
+        .option-icon {
+            background: var(--fb-blue);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+        
+        .option-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .option-desc {
+            color: var(--gray);
+            line-height: 1.5;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            flex: 1;
+        }
+        
+        .datetime-picker {
+            margin-top: 10px;
+        }
+        
+        .datetime-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        
+        .datetime-input {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+        
+        /* Preview Section */
+        .preview-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .preview-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .preview-content {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #000;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            min-height: 250px;
+        }
+        
+        .video-preview {
+            max-width: 100%;
+            max-height: 100%;
+            display: none;
+        }
+        
+        .preview-placeholder {
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .preview-placeholder i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: var(--fb-blue);
+        }
+        
+        .preview-caption {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            box-shadow: var(--shadow);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            flex-shrink: 0;
+        }
+        
+        /* Status Section */
+        .status-section {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: var(--shadow);
+            grid-column: 1 / -1;
+        }
+        
+        .status-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--success);
+        }
+        
+        .status-text {
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .progress-container {
+            background: var(--light);
+            border-radius: 10px;
+            height: 10px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: var(--fb-blue);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .action-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            border: none;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--fb-blue);
+            color: var(--fb-blue);
+        }
+        
+        .btn-outline:hover {
+            background: rgba(24, 119, 242, 0.1);
+        }
+        
+        .btn-primary {
+            background: var(--fb-blue);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--fb-blue-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(24, 119, 242, 0.3);
+        }
+        
+        .btn-success {
+            background: var(--fb-green);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #369e22;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(66, 183, 42, 0.3);
+        }
+        
+        /* Footer */
+        footer {
+            padding: 15px 30px;
+            background: var(--light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            color: var(--gray);
+            border-top: 1px solid var(--border);
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .social-icons {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .social-icons a {
+            color: var(--fb-blue);
+            font-size: 1.2rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .social-icons a:hover {
+            transform: translateY(-3px);
+            color: var(--fb-blue-dark);
+        }
+        
+        /* Token Security Note */
+        .security-note {
+            background: rgba(231, 243, 255, 0.8);
+            border-left: 4px solid var(--fb-blue);
+            padding: 12px 20px;
+            margin: 0 30px;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* File Input */
+        #fileInput {
+            display: none;
+        }
+        
+        /* Upload Success */
+        .upload-success {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        
+        .upload-success i {
+            color: var(--success);
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .dashboard {
+                height: auto;
+                min-height: 95vh;
+            }
+            
+            .main-content {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        @media (max-width: 900px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .api-controls {
+                width: 100%;
+            }
+            
+            .api-input-container {
+                width: 100%;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .header {
+                padding: 15px;
+            }
+            
+            .main-content {
+                padding: 15px;
+            }
+            
+            .panel {
+                padding: 20px;
+            }
+            
+            .schedule-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .security-note {
+                margin: 0 15px;
+            }
+            
+            .logo-container {
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <header class="header">
+            <div class="logo-container">
+                <div class="logo">
+                    <i class="fab fa-facebook"></i>
+                </div>
+                <div>
+                    <h1 class="app-title">ReelMaster Pro</h1>
+                    <div class="app-subtitle">Automate your Facebook Reels with AI-powered tools</div>
+                </div>
+            </div>
+            
+            <div class="api-controls">
+                <div class="api-input-container">
+                    <input type="password" class="api-input" id="apiToken" value="EAAPbZCEY2xLMBPF0ItNAl8UKM0ZCHhLPLj1nymOzz73vFmIouZADCHB6AACPt65HAcsvolM9Js6s2LCeT0Y1ouNWEYehsksZCS3XZBVlYrYGXEr3vFaEmNAIxyRsI2cnmJW4gZAGu2TnG7FNXcZBGscSGsQpZATtcID96wOmOkJtlKLEffKrFZBYRmEAOVL7RBvZCjZBELxxOFHnjwZD">
+                    <span class="toggle-visibility" id="toggleToken">
+                        <i class="fas fa-eye"></i>
+                    </span>
+                </div>
+                
+                <div class="api-input-container">
+                    <input type="text" class="api-input" id="pageId" placeholder="Page ID" value="108956789012345">
+                </div>
+                
+                <button class="connect-btn" id="connectBtn">
+                    <i class="fas fa-plug"></i> Connect
+                </button>
+            </div>
+        </header>
+        
+        <div class="security-note">
+            <i class="fas fa-shield-alt"></i> Your API token is securely stored and hidden. Only show when necessary.
+        </div>
+
+        <div class="main-content">
+            <div class="panel upload-section">
+                <div class="panel-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-cloud-upload-alt"></i> Upload Reels
+                    </h2>
+                    <button class="btn btn-outline" id="recentBtn">
+                        <i class="fas fa-history"></i> Recent
+                    </button>
+                </div>
+                <div class="panel-content">
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-icon">
+                            <i class="fas fa-video"></i>
+                        </div>
+                        <h3 class="upload-text">Drag & Drop your Reels videos here</h3>
+                        <p>Maximum file size: 100MB</p>
+                        <button class="btn btn-primary" id="browseBtn" style="margin-top: 20px;">
+                            <i class="fas fa-folder-open"></i> Select Files
+                        </button>
+                        <input type="file" id="fileInput" accept="video/*" multiple>
+                    </div>
+                    
+                    <div class="file-list" id="fileList">
+                        <!-- Files will be added here dynamically -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel caption-section">
+                <div class="panel-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-comment-dots"></i> Caption & Details
+                    </h2>
+                    <button class="btn btn-outline" id="aiAssistBtn">
+                        <i class="fas fa-robot"></i> AI Assist
+                    </button>
+                </div>
+                <div class="panel-content">
+                    <textarea class="caption-input" id="captionInput">Just launched our new product line! 🚀 Check out these amazing features that will transform your daily routine. #NewProduct #Innovation</textarea>
+                    
+                    <div class="caption-tools">
+                        <button class="tool-btn" id="enhanceBtn">
+                            <i class="fas fa-magic"></i> Enhance with AI
+                        </button>
+                        <button class="tool-btn" id="saveTemplateBtn">
+                            <i class="fas fa-save"></i> Save Template
+                        </button>
+                        <button class="tool-btn" id="hashtagBtn">
+                            <i class="fas fa-hashtag"></i> Generate Hashtags
+                        </button>
+                    </div>
+                    
+                    <div class="hashtag-suggestions">
+                        <div class="hashtag-title">
+                            <i class="fas fa-lightbulb"></i>
+                            <span>Suggested Hashtags</span>
+                        </div>
+                        <div class="hashtag-list">
+                            <div class="hashtag">#NewProduct</div>
+                            <div class="hashtag">#Innovation</div>
+                            <div class="hashtag">#Tech</div>
+                            <div class="hashtag">#ProductLaunch</div>
+                            <div class="hashtag">#MustHave</div>
+                            <div class="hashtag">#GameChanger</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="scheduling-section">
+                <h2 class="section-title">
+                    <i class="fas fa-calendar-alt"></i> Schedule Posting
+                </h2>
+                
+                <div class="schedule-grid">
+                    <div class="schedule-option active" id="immediateOption">
+                        <div class="option-header">
+                            <div class="option-icon">
+                                <i class="fas fa-bolt"></i>
+                            </div>
+                            <h3 class="option-title">Post Immediately</h3>
+                        </div>
+                        <p class="option-desc">Upload and publish your Reel right away for instant engagement.</p>
+                    </div>
+                    
+                    <div class="schedule-option" id="scheduleOption">
+                        <div class="option-header">
+                            <div class="option-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <h3 class="option-title">Schedule for Later</h3>
+                        </div>
+                        <p class="option-desc">Choose the perfect time to maximize your reach and engagement.</p>
+                        <div class="datetime-picker">
+                            <label class="datetime-label">Select Date & Time</label>
+                            <input type="datetime-local" class="datetime-input" id="scheduleTime" value="2023-08-15T18:00">
+                        </div>
+                    </div>
+                    
+                    <div class="schedule-option" id="recurringOption">
+                        <div class="option-header">
+                            <div class="option-icon">
+                                <i class="fas fa-sync-alt"></i>
+                            </div>
+                            <h3 class="option-title">Recurring Schedule</h3>
+                        </div>
+                        <p class="option-desc">Automatically post Reels at optimal times throughout the week.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <div class="panel-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-eye"></i> Preview
+                    </h2>
+                    <button class="btn btn-outline" id="refreshPreviewBtn">
+                        <i class="fas fa-sync"></i> Refresh
+                    </button>
+                </div>
+                <div class="panel-content preview-container">
+                    <div class="preview-content" id="previewContent">
+                        <div class="preview-placeholder" id="previewPlaceholder">
+                            <i class="fas fa-play-circle"></i>
+                            <h3>Your Reel Preview</h3>
+                            <p>Upload a video to see the preview</p>
+                        </div>
+                        <video class="video-preview" id="videoPreview" controls></video>
+                    </div>
+                    <div class="preview-caption" id="previewCaption">
+                        Just launched our new product line! 🚀 Check out these amazing features that will transform your daily routine. #NewProduct #Innovation
+                    </div>
+                </div>
+            </div>
+            
+            <div class="status-section">
+                <div class="status-header">
+                    <div class="status-indicator" id="statusIndicator"></div>
+                    <div class="status-text" id="statusText">Ready to connect to Facebook API</div>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-outline" id="saveDraftBtn">
+                        <i class="fas fa-save"></i> Save Draft
+                    </button>
+                    <button class="btn btn-success" id="postButton">
+                        <i class="fas fa-paper-plane"></i> Post to Facebook
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <div class="copyright">
+                &copy; 2023 ReelMaster Pro. All rights reserved.
+            </div>
+            <div class="social-icons">
+                <a href="#"><i class="fab fa-facebook"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-tiktok"></i></a>
+                <a href="#"><i class="fab fa-youtube"></i></a>
+            </div>
+            <div class="contact">
+                support@reelmaster.com | (800) 123-4567
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // DOM Elements
+        const apiToken = document.getElementById('apiToken');
+        const toggleToken = document.getElementById('toggleToken');
+        const connectBtn = document.getElementById('connectBtn');
+        const captionInput = document.getElementById('captionInput');
+        const previewCaption = document.getElementById('previewCaption');
+        const postButton = document.getElementById('postButton');
+        const uploadArea = document.getElementById('uploadArea');
+        const browseBtn = document.getElementById('browseBtn');
+        const fileInput = document.getElementById('fileInput');
+        const fileList = document.getElementById('fileList');
+        const progressBar = document.getElementById('progressBar');
+        const statusText = document.getElementById('statusText');
+        const statusIndicator = document.getElementById('statusIndicator');
+        const videoPreview = document.getElementById('videoPreview');
+        const previewPlaceholder = document.getElementById('previewPlaceholder');
+        const previewContent = document.getElementById('previewContent');
+        
+        // Uploaded files array
+        let uploadedFiles = [];
+        const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB in bytes
+
+        // Toggle token visibility
+        toggleToken.addEventListener('click', () => {
+            if (apiToken.type === 'password') {
+                apiToken.type = 'text';
+                toggleToken.innerHTML = '<i class="fas fa-eye-slash"></i>';
+            } else {
+                apiToken.type = 'password';
+                toggleToken.innerHTML = '<i class="fas fa-eye"></i>';
+            }
+        });
+        
+        // Connect to API
+        connectBtn.addEventListener('click', () => {
+            if (!apiToken.value || !apiToken.value.startsWith('EAAP')) {
+                statusText.textContent = "Invalid API token format";
+                statusIndicator.style.background = 'var(--danger)';
+                return;
+            }
+            
+            // Simulate connection process
+            connectBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Connecting...';
+            connectBtn.disabled = true;
+            
+            setTimeout(() => {
+                connectBtn.innerHTML = '<i class="fas fa-plug"></i> Connected';
+                connectBtn.style.background = 'var(--fb-green)';
+                statusText.textContent = "Connected to Facebook API - Ready to post";
+                statusIndicator.style.background = 'var(--success)';
+                
+                // Enable posting button
+                postButton.disabled = false;
+            }, 2000);
+        });
+        
+        // Update preview caption as user types
+        captionInput.addEventListener('input', () => {
+            previewCaption.textContent = captionInput.value;
+        });
+        
+        // Handle post button click
+        postButton.addEventListener('click', () => {
+            if (!apiToken.value) {
+                statusText.textContent = "Please connect with a valid API token first";
+                statusIndicator.style.background = 'var(--danger)';
+                return;
+            }
+            
+            if (uploadedFiles.length === 0) {
+                statusText.textContent = "Please upload at least one video first";
+                statusIndicator.style.background = 'var(--danger)';
+                return;
+            }
+            
+            // Show loading state
+            postButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Posting...';
+            postButton.disabled = true;
+            statusText.textContent = "Posting to Facebook...";
+            statusIndicator.style.background = 'var(--warning)';
+            
+            // Simulate posting process
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 5;
+                progressBar.style.width = `${progress}%`;
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    simulateSuccessfulPost();
+                }
+            }, 200);
+        });
+        
+        // Upload area functionality
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.style.backgroundColor = 'rgba(24, 119, 242, 0.15)';
+            uploadArea.style.borderColor = '#0d5cb6';
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.style.backgroundColor = 'rgba(24, 119, 242, 0.05)';
+            uploadArea.style.borderColor = 'var(--fb-blue)';
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.style.backgroundColor = 'rgba(24, 119, 242, 0.05)';
+            uploadArea.style.borderColor = 'var(--fb-blue)';
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFiles(files);
+            }
+        });
+        
+        // Browse button click
+        browseBtn.addEventListener('click', () => {
+            fileInput.click();
+        });
+        
+        // File input change
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFiles(e.target.files);
+            }
+        });
+        
+        // Handle file processing
+        function handleFiles(files) {
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                
+                // Check file type
+                if (!file.type.startsWith('video/')) {
+                    alert(`File ${file.name} is not a video. Only video files are allowed.`);
+                    continue;
+                }
+                
+                // Check file size
+                if (file.size > MAX_FILE_SIZE) {
+                    alert(`File ${file.name} exceeds the maximum file size of 100MB`);
+                    continue;
+                }
+                
+                // Add to uploaded files
+                uploadedFiles.push(file);
+                addFileToList(file);
+                
+                // Show first file in preview
+                if (i === 0) {
+                    showVideoPreview(file);
+                }
+            }
+            
+            // Update upload area to show success
+            if (uploadedFiles.length > 0) {
+                uploadArea.innerHTML = `
+                    <div class="upload-success">
+                        <i class="fas fa-check-circle"></i>
+                        <h3 class="upload-text">${uploadedFiles.length} Video${uploadedFiles.length > 1 ? 's' : ''} Uploaded!</h3>
+                        <p>Your reel${uploadedFiles.length > 1 ? 's are' : ' is'} ready for posting</p>
+                        <button class="btn btn-primary" style="margin-top: 20px;" id="addMoreBtn">
+                            <i class="fas fa-plus"></i> Add More Videos
+                        </button>
+                    </div>
+                `;
+                
+                // Add event listener to new button
+                document.getElementById('addMoreBtn').addEventListener('click', () => {
+                    fileInput.click();
+                });
+            }
+        }
+        
+        // Add file to the file list
+        function addFileToList(file) {
+            const fileSize = formatFileSize(file.size);
+            
+            const fileItem = document.createElement('div');
+            fileItem.className = 'file-item';
+            fileItem.innerHTML = `
+                <div class="file-icon">
+                    <i class="fas fa-film"></i>
+                </div>
+                <div class="file-info">
+                    <div class="file-name">${file.name}</div>
+                    <div class="file-size">${fileSize} - Ready to post</div>
+                </div>
+                <div class="file-actions">
+                    <div class="file-action-btn" onclick="removeFile('${file.name}')">
+                        <i class="fas fa-trash"></i>
+                    </div>
+                </div>
+            `;
+            
+            fileList.appendChild(fileItem);
+        }
+        
+        // Remove file from the list
+        window.removeFile = function(filename) {
+            uploadedFiles = uploadedFiles.filter(file => file.name !== filename);
+            
+            // Rebuild file list
+            fileList.innerHTML = '';
+            uploadedFiles.forEach(file => addFileToList(file));
+            
+            // Reset preview if we removed the first file
+            if (uploadedFiles.length > 0) {
+                showVideoPreview(uploadedFiles[0]);
+            } else {
+                resetUploadArea();
+                resetPreview();
+            }
+        }
+        
+        // Show video preview
+        function showVideoPreview(file) {
+            const objectUrl = URL.createObjectURL(file);
+            videoPreview.src = objectUrl;
+            videoPreview.style.display = 'block';
+            previewPlaceholder.style.display = 'none';
+        }
+        
+        // Reset preview
+        function resetPreview() {
+            videoPreview.src = '';
+            videoPreview.style.display = 'none';
+            previewPlaceholder.style.display = 'block';
+        }
+        
+        // Reset upload area
+        function resetUploadArea() {
+            uploadArea.innerHTML = `
+                <div class="upload-icon">
+                    <i class="fas fa-video"></i>
+                </div>
+                <h3 class="upload-text">Drag & Drop your Reels videos here</h3>
+                <p>Maximum file size: 100MB</p>
+                <button class="btn btn-primary" id="browseBtn" style="margin-top: 20px;">
+                    <i class="fas fa-folder-open"></i> Select Files
+                </button>
+            `;
+            
+            // Reattach event listener
+            document.getElementById('browseBtn').addEventListener('click', () => {
+                fileInput.click();
+            });
+        }
+        
+        // Format file size
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+        
+        // Simulate a successful post
+        function simulateSuccessfulPost() {
+            postButton.innerHTML = '<i class="fas fa-check"></i> Posted Successfully!';
+            postButton.style.background = '#369e22';
+            statusText.textContent = "Posted successfully at " + new Date().toLocaleTimeString();
+            statusIndicator.style.background = 'var(--success)';
+            
+            // Reset after 5 seconds
+            setTimeout(() => {
+                postButton.innerHTML = '<i class="fas fa-paper-plane"></i> Post to Facebook';
+                postButton.style.background = '';
+                postButton.disabled = false;
+                progressBar.style.width = '0%';
+                
+                // Clear uploaded files
+                uploadedFiles = [];
+                fileList.innerHTML = '';
+                resetUploadArea();
+                resetPreview();
+            }, 5000);
+        }
+        
+        // Schedule option selection
+        const scheduleOptions = document.querySelectorAll('.schedule-option');
+        scheduleOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                scheduleOptions.forEach(opt => opt.classList.remove('active'));
+                option.classList.add('active');
+            });
+        });
+        
+        // Hashtag selection
+        const hashtags = document.querySelectorAll('.hashtag');
+        hashtags.forEach(hashtag => {
+            hashtag.addEventListener('click', () => {
+                // Toggle selection state
+                hashtag.classList.toggle('selected');
+                
+                // Update appearance
+                if (hashtag.classList.contains('selected')) {
+                    hashtag.style.background = 'var(--fb-blue)';
+                    hashtag.style.color = 'white';
+                } else {
+                    hashtag.style.background = 'rgba(24, 119, 242, 0.1)';
+                    hashtag.style.color = 'var(--fb-blue)';
+                }
+                
+                // Add to caption
+                if (hashtag.classList.contains('selected') && 
+                    !captionInput.value.includes(hashtag.textContent)) {
+                    captionInput.value += ' ' + hashtag.textContent;
+                    previewCaption.textContent = captionInput.value;
+                }
+            });
+        });
+        
+        // Initialize button listeners
+        document.getElementById('aiAssistBtn').addEventListener('click', () => {
+            alert('AI Assist feature activated! Enhancing your caption...');
+        });
+        
+        document.getElementById('enhanceBtn').addEventListener('click', () => {
+            alert('Caption enhanced with AI!');
+        });
+        
+        document.getElementById('saveTemplateBtn').addEventListener('click', () => {
+            alert('Template saved successfully!');
+        });
+        
+        document.getElementById('hashtagBtn').addEventListener('click', () => {
+            alert('Hashtags generated!');
+        });
+        
+        document.getElementById('recentBtn').addEventListener('click', () => {
+            alert('Showing recent uploads...');
+        });
+        
+        document.getElementById('saveDraftBtn').addEventListener('click', () => {
+            alert('Draft saved successfully!');
+        });
+        
+        document.getElementById('refreshPreviewBtn').addEventListener('click', () => {
+            alert('Preview refreshed!');
+        });
+    </script>
+</body>
+</html>
